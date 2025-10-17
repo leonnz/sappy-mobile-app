@@ -114,21 +114,6 @@ export function OnboardingCarousel() {
           </Link>
         </p>
       </div>
-
-      {/* Swipe Gesture Support for Mobile */}
-      <div
-        className="absolute inset-0 md:hidden"
-        onTouchStart={(e) => {
-          const touchStart = e.touches[0].clientX
-          const handleTouchEnd = (endEvent: TouchEvent) => {
-            const touchEnd = endEvent.changedTouches[0].clientX
-            if (touchStart - touchEnd > 50) nextSlide()
-            if (touchEnd - touchStart > 50) prevSlide()
-            document.removeEventListener("touchend", handleTouchEnd)
-          }
-          document.addEventListener("touchend", handleTouchEnd)
-        }}
-      />
     </div>
   )
 }

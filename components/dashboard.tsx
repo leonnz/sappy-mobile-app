@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Home, Calendar, Plus, FileText, Users } from "lucide-react"
 import Image from "next/image"
@@ -15,6 +15,21 @@ export function Dashboard() {
   const [todayPoints, setTodayPoints] = useState(0)
   const [totalPoints, setTotalPoints] = useState(0)
   const [isStoreOpen, setIsStoreOpen] = useState(false)
+
+  // Load prediction from localStorage on mount
+  useEffect(() => {
+    const prediction = localStorage.getItem('waterPrediction')
+    if (prediction) {
+      const predictionValue = parseFloat(prediction)
+      setWaterUsed(predictionValue)
+      
+      // Calculate points based on water saved
+      const saved = Math.max(0, waterLimit - predictionValue)
+      const points = Math.floor(saved) // 1 point per litre saved
+      setTodayPoints(points)
+      setTotalPoints(points)
+    }
+  }, [])
 
   // Calculate water saved and Sappy's state
   const waterSaved = Math.max(0, waterLimit - waterUsed)
@@ -119,7 +134,7 @@ export function Dashboard() {
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <div className="text-2xl font-bold text-[#2C3E50]">{waterUsed}L</div>
+              <div className="text-2xl font-bold text-[#2C3E50]">{waterUsed.toFixed(1)}L</div>
               <div className="text-xs text-[#34495E]">(out of {waterLimit}L)</div>
             </div>
           </div>

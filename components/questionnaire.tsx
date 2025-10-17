@@ -100,6 +100,11 @@ export function Questionnaire() {
       const data = await response.json()
       console.log('API Response:', data)
       
+      // Store the prediction in localStorage
+      if (data.status === 'ok' && data.prediction) {
+        localStorage.setItem('waterPrediction', data.prediction.toString())
+      }
+      
       router.push("/dashboard")
     } catch (error) {
       console.error('Error submitting questionnaire:', error)

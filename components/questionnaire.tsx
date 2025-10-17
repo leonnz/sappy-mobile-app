@@ -36,6 +36,7 @@ export function Questionnaire() {
   const router = useRouter()
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState<Record<string, string[]>>({})
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const question = questions[currentQuestion]
   const currentAnswers = answers[question.id] || []
@@ -53,12 +54,68 @@ export function Questionnaire() {
     }
   }
 
+  const submitQuestionnaire = async () => {
+    setIsSubmitting(true)
+    
+    // Map answers to API payload
+    const residency = answers.residency || []
+    const assets = answers.assets || []
+    const appliances = answers.appliances || []
+
+    const payload = {
+      customer_data: {
+        household_size: 200,
+        household_garden_area: 20,
+        household_pool: assets.includes("Pool") ? 1 : 0,
+        household_garden: assets.includes("Garden") ? 1 : 0,
+        number_bathrooms: 0,
+        irrigation_system: assets.includes("Irrigation system") ? 1 : 0,
+        house_plants: 1,
+        balcony_plants: 0,
+        Bathtub: 0,
+        Dishwasher: appliances.includes("Dishwasher") || appliances.includes("Both") ? 1 : 0,
+        Shower: 0,
+        Sink: 1,
+        Toilet: 0,
+        Tub_Shower: 0,
+        Washing_Machine: appliances.includes("Washing machine") || appliances.includes("Both") ? 1 : 0,
+        residency_Flat: residency.includes("Flat") ? 1 : 0,
+        residency_Other: residency.includes("Other") ? 1 : 0,
+        residency_Single_Family: residency.includes("Single family") ? 1 : 0,
+        env_attitude_High_sensitivity: 0,
+        env_attitude_Low_sensitivity: 0,
+        env_attitude_Medium_sensitivity: 0,
+      },
+    }
+
+    try {
+      const response = await fetch('/api/inference?smart_meter_id=T284', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
+
+      const data = await response.json()
+      console.log('API Response:', data)
+      
+      router.push("/dashboard")
+    } catch (error) {
+      console.error('Error submitting questionnaire:', error)
+      // Still navigate to dashboard even if API fails
+      router.push("/dashboard")
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   const handleNext = () => {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1)
     } else {
       console.log("[v0] Questionnaire completed:", answers)
-      router.push("/dashboard")
+      submitQuestionnaire()
     }
   }
 
@@ -115,10 +172,14 @@ export function Questionnaire() {
       <div className="mt-8">
         <Button
           onClick={handleNext}
-          disabled={currentAnswers.length === 0}
+          disabled={currentAnswers.length === 0 || isSubmitting}
           className="h-14 w-full rounded-2xl bg-[#3498DB] text-lg font-semibold text-white shadow-lg transition-all hover:bg-[#2980B9] hover:shadow-xl disabled:opacity-50 disabled:hover:bg-[#3498DB]"
         >
-          {currentQuestion < questions.length - 1 ? "Next question" : "Complete"}
+          {isSubmitting 
+            ? "Submitting..." 
+            : currentQuestion < questions.length - 1 
+            ? "Next question" 
+            : "Complete"}
         </Button>
       </div>
     </div>

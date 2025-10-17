@@ -10,7 +10,7 @@ type SappyState = "wilted" | "starting" | "growing" | "thriving"
 
 export function Dashboard() {
   const [userName] = useState("Nick")
-  const [waterLimit] = useState(150) // Daily water limit in liters
+  const [waterLimit, setWaterLimit] = useState(150) // Daily water limit in liters
   const [waterUsed, setWaterUsed] = useState(0) // Current water usage
   const [todayPoints, setTodayPoints] = useState(0)
   const [totalPoints, setTotalPoints] = useState(0)
@@ -21,13 +21,9 @@ export function Dashboard() {
     const prediction = localStorage.getItem('waterPrediction')
     if (prediction) {
       const predictionValue = parseFloat(prediction)
-      setWaterUsed(predictionValue)
-      
-      // Calculate points based on water saved
-      const saved = Math.max(0, waterLimit - predictionValue)
-      const points = Math.floor(saved) // 1 point per litre saved
-      setTodayPoints(points)
-      setTotalPoints(points)
+      const newLimit = Math.floor(predictionValue * 10)
+      setWaterLimit(newLimit)
+      setWaterUsed(0)
     }
   }, [])
 
@@ -134,7 +130,7 @@ export function Dashboard() {
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <div className="text-2xl font-bold text-[#2C3E50]">{waterUsed.toFixed(1)}L</div>
+              <div className="text-2xl font-bold text-[#2C3E50]">{waterUsed}L</div>
               <div className="text-xs text-[#34495E]">(out of {waterLimit}L)</div>
             </div>
           </div>

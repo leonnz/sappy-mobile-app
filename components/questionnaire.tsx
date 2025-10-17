@@ -13,35 +13,23 @@ type Question = {
 
 const questions: Question[] = [
   {
+    id: "residency",
+    question: "What is your residency type?",
+    options: ["Flat", "Single family", "Other"],
+    multiSelect: true,
+  },
+  {
     id: "assets",
     question: "Do you have any of these assets at home?",
     options: ["Pool", "Irrigation system", "Garden"],
     multiSelect: true,
   },
   {
-    id: "household",
-    question: "How many people live in your household?",
-    options: ["1-2 people", "3-4 people", "5+ people"],
-    multiSelect: false,
-  },
-  {
-    id: "property",
-    question: "What type of property do you live in?",
-    options: ["House", "Apartment", "Townhouse"],
-    multiSelect: false,
-  },
-  {
     id: "appliances",
     question: "Which water-using appliances do you have?",
     options: ["Dishwasher", "Washing machine", "Both"],
     multiSelect: false,
-  },
-  {
-    id: "awareness",
-    question: "How aware are you of your water usage?",
-    options: ["Very aware", "Somewhat aware", "Not very aware"],
-    multiSelect: false,
-  },
+  }
 ]
 
 export function Questionnaire() {
